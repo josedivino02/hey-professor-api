@@ -1,9 +1,8 @@
 <?php
 
 use App\Models\User;
-use Laravel\Sanctum\Sanctum;
-
-use function Pest\Laravel\{assertDatabaseHas, postJson};
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\postJson;use Laravel\Sanctum\Sanctum;
 
 it("should be able to store a new question", function () {
     $user = User::factory()->create();
@@ -15,7 +14,7 @@ it("should be able to store a new question", function () {
     ]))->assertSuccessful();
 
     assertDatabaseHas('questions', [
-        'user_id'  => $user->id,
+        'user_id' => $user->id,
         'question' => 'Lorem ipsum Divino?',
     ]);
 });
@@ -30,8 +29,22 @@ test("after creating a new question. I need to make sure that it creates on _dra
     ]))->assertSuccessful();
 
     assertDatabaseHas('questions', [
-        'user_id'  => $user->id,
-        'status'   => 'draft',
+        'user_id' => $user->id,
+        'status' => 'draft',
         'question' => 'Lorem ipsum Divino?',
     ]);
+});
+
+describe("validation rules", function () {
+    test("question::required", function () {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        postJson(route('questions.store', []))
+            ->assertJsonValidationErrors([
+                'question' => 'required',
+            ]);
+    });
+
 });
