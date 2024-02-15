@@ -47,4 +47,16 @@ describe("validation rules", function () {
             ]);
     });
 
+    test("question::ending with question mark", function () {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        postJson(route('questions.store', [
+            'question' => 'Question without a question mark',
+        ]))
+            ->assertJsonValidationErrors([
+                'question' => 'The :attribute should end with question mark (?).',
+            ]);
+    });
 });
