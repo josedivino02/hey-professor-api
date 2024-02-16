@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Question;
-use App\Models\User;
+use App\Models\{Question, User};
 
 class QuestionPolicy
 {

@@ -2,7 +2,9 @@
 
 use App\Models\Question;
 use App\Models\User;
+
 use function Pest\Laravel\assertDatabaseHas;
+
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\deleteJson;use Laravel\Sanctum\Sanctum;
 
@@ -16,7 +18,7 @@ it("should be able to delete a question", function () {
     deleteJson(route('questions.delete', $question))
         ->assertNoContent();
 
-    assertDatabaseMissing('question', ['id' => $question->id]);
+    assertDatabaseMissing('questions', ['id' => $question->id]);
 });
 
 it("should allow that only the creator can delete", function () {
@@ -30,5 +32,5 @@ it("should allow that only the creator can delete", function () {
     deleteJson(route('questions.delete', $question))
         ->assertForbidden();
 
-    assertDatabaseHas('question', ['id' => $question->id]);
+    assertDatabaseHas('questions', ['id' => $question->id]);
 });
