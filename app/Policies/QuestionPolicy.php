@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Question;
-use App\Models\User;
+use App\Models\{Question, User};
 
 class QuestionPolicy
 {
@@ -13,6 +12,11 @@ class QuestionPolicy
     }
 
     public function forceDelete(User $user, Question $question): bool
+    {
+        return $user->is($question->user);
+    }
+
+    public function archive(User $user, Question $question): bool
     {
         return $user->is($question->user);
     }
