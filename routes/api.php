@@ -11,4 +11,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('questions', Question\StoreController::class)->name('questions.store');
     Route::put('questions/{question}', Question\UpdateController::class)->name('questions.update');
+    Route::delete('questions/{question}', Question\DeleteController::class)->name('questions.delete');
 });
