@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Question;
 use App\Models\User;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\postJson;use Laravel\Sanctum\Sanctum;
@@ -19,7 +20,7 @@ it("should be able to store a new question", function () {
     ]);
 });
 
-test("after creating a new question. I need to make sure that it creates on _draft status", function () {
+test("after creating a new question. I need to make sure that it creates on _draft_ status", function () {
     $user = User::factory()->create();
 
     Sanctum::actingAs($user);
@@ -70,6 +71,24 @@ describe("validation rules", function () {
         ]))
             ->assertJsonValidationErrors([
                 'question' => 'least 10 characters',
+            ]);
+    });
+
+    test("question::should be unique", function () {
+        $user = User::factory()->create();
+        Question::factory()->create([
+            'question' => 'Lorem ipsum Divino?',
+            'status' => 'draft',
+            'user_id' => $user->id,
+        ]);
+
+        Sanctum::actingAs($user);
+
+        postJson(route('questions.store', [
+            'question' => 'Lorem ipsum Divino?',
+        ]))
+            ->assertJsonValidationErrors([
+                'question' => 'already been taken',
             ]);
     });
 });
