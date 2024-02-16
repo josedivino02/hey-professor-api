@@ -2,9 +2,9 @@
 
 use App\Models\Question;
 use App\Models\User;
+use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\deleteJson;
-use Laravel\Sanctum\Sanctum;
+use function Pest\Laravel\deleteJson;use Laravel\Sanctum\Sanctum;
 
 it("should be able to delete a question", function () {
     $user = User::factory()->create();
@@ -17,4 +17,18 @@ it("should be able to delete a question", function () {
         ->assertNoContent();
 
     assertDatabaseMissing('question', ['id' => $question->id]);
+});
+
+it("should allow that only the creator can delete", function () {
+    $user = User::factory()->create();
+    $user2 = User::factory()->create();
+
+    $question = Question::factory()->for($user)->create();
+
+    Sanctum::actingAs($user2);
+
+    deleteJson(route('questions.delete', $question))
+        ->assertForbidden();
+
+    assertDatabaseHas('question', ['id' => $question->id]);
 });
