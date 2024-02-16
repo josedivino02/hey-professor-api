@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\Question;
-use App\Models\User;
-use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\putJson;
+use App\Models\{Question, User};
 use Laravel\Sanctum\Sanctum;
 
+use function Pest\Laravel\{assertDatabaseHas, putJson};
+
 it("should be able to update a question", function () {
-    $user = User::factory()->create();
+    $user     = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id]);
 
     Sanctum::actingAs($user);
@@ -17,15 +16,15 @@ it("should be able to update a question", function () {
     ])->assertOk();
 
     assertDatabaseHas('questions', [
-        'id' => $question->id,
-        'user_id' => $user->id,
+        'id'       => $question->id,
+        'user_id'  => $user->id,
         'question' => 'Updating question?',
     ]);
 });
 
 describe("validation rules", function () {
     test("question::required", function () {
-        $user = User::factory()->create();
+        $user     = User::factory()->create();
         $question = Question::factory()->create(['user_id' => $user->id]);
 
         Sanctum::actingAs($user);
@@ -38,7 +37,7 @@ describe("validation rules", function () {
     });
 
     test("question::ending with question mark", function () {
-        $user = User::factory()->create();
+        $user     = User::factory()->create();
         $question = Question::factory()->create(['user_id' => $user->id]);
 
         Sanctum::actingAs($user);
@@ -51,7 +50,7 @@ describe("validation rules", function () {
     });
 
     test("question::min characters should be 10", function () {
-        $user = User::factory()->create();
+        $user     = User::factory()->create();
         $question = Question::factory()->create(['user_id' => $user->id]);
 
         Sanctum::actingAs($user);
@@ -67,8 +66,8 @@ describe("validation rules", function () {
         $user = User::factory()->create();
         Question::factory()->create([
             'question' => 'Lorem ipsum Divino?',
-            'status' => 'draft',
-            'user_id' => $user->id,
+            'status'   => 'draft',
+            'user_id'  => $user->id,
         ]);
 
         $question = Question::factory()->create(['user_id' => $user->id]);
@@ -83,10 +82,10 @@ describe("validation rules", function () {
     });
 
     test("question::should be unique only if id is different", function () {
-        $user = User::factory()->create();
+        $user     = User::factory()->create();
         $question = Question::factory()->create([
             'question' => 'Lorem ipsum Divino?',
-            'user_id' => $user->id,
+            'user_id'  => $user->id,
         ]);
 
         Sanctum::actingAs($user);
@@ -94,6 +93,19 @@ describe("validation rules", function () {
         putJson(route('questions.update', $question), [
             'question' => 'Lorem ipsum Divino?',
         ])->assertOk();
+    });
+
+    test("question::should be able to edit only if the status is in draft", function () {
+        $user     = User::factory()->create();
+        $question = Question::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+
+        Sanctum::actingAs($user);
+
+        putJson(route('questions.update', $question), [
+            'question' => 'Question should have a mark?',
+        ])->assertJsonValidationErrors([
+            'question' => 'The question should be a draft to be able to edit.',
+        ]);
     });
 });
 
@@ -111,7 +123,7 @@ describe("security", function () {
         ])->assertForbidden();
 
         assertDatabaseHas('questions', [
-            'id' => $question->id,
+            'id'       => $question->id,
             'question' => $question->question,
         ]);
 

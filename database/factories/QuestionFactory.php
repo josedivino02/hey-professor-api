@@ -18,7 +18,7 @@ class QuestionFactory extends Factory
     {
         return [
             'question' => $this->faker->sentence . '?',
-            'status' => 'draft',
+            'status'   => 'draft',
         ];
     }
 }

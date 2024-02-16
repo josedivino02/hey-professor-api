@@ -13,7 +13,7 @@ class StoreController extends Controller
 
         $question = user()->questions()
             ->create([
-                'status' => 'draft',
+                'status'   => 'draft',
                 'question' => $request->question,
             ]);
 
