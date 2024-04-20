@@ -3,7 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-use function Pest\Laravel\{assertDatabaseHas, postJson};
+use function Pest\Laravel\{assertAuthenticatedAs, assertDatabaseHas, postJson};
 use function PHPUnit\Framework\assertTrue;
 
 it("Should be able to register in the application", function () {
@@ -21,6 +21,18 @@ it("Should be able to register in the application", function () {
     $divino = User::whereEmail('divino@divino.com')->first();
 
     assertTrue(Hash::check('password', $divino->password));
+});
+
+it("should log the new user in the system", function () {
+    postJson(route('register'), [
+        "name"     => "Divino",
+        "email"    => "divino@divino.com",
+        "password" => "password",
+    ])->assertOk();
+
+    $user = User::first();
+
+    assertAuthenticatedAs($user);
 });
 
 describe("validations", function () {
