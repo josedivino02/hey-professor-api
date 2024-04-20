@@ -14,3 +14,4 @@ Route::delete('questions/{question}', Question\DeleteController::class)->name('q
 Route::delete('questions/{question}/archive', Question\ArchiveController::class)->name('questions.archive');
 Route::put('questions/{question}/restore', Question\RestoreController::class)->name('questions.restore');
 Route::put('questions/{question}/publish', Question\PublishController::class)->name('questions.publish');
+Route::post('questions/{question}/vote/{vote}', Question\VoteController::class)->name('questions.vote');
