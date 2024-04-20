@@ -11,14 +11,12 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $search = request()->q;
-
         $questions = Question::query()
         ->published()
         ->search(request()->q)
         ->withSum('votes', 'like')
         ->withSum('votes', 'unlike')
-        ->get();
+        ->paginate();
 
         return  QuestionResource::collection($questions);
     }
