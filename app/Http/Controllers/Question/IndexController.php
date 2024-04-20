@@ -16,6 +16,8 @@ class IndexController extends Controller
         $questions = Question::query()
         ->published()
         ->search(request()->q)
+        ->withSum('votes', 'like')
+        ->withSum('votes', 'unlike')
         ->get();
 
         return  QuestionResource::collection($questions);
